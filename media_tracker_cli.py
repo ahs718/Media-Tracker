@@ -41,7 +41,7 @@ def complete(position: int):
 
 @app.command(short_help="Displays all of the items in the list")
 def show():
-    tasks = get_all_todos
+    tasks = get_all_todos()
     console.print("[bold magenta]Task[/bold magenta]", "💻")
 
     table = Table(show_header=True, header_style="bold blue")
