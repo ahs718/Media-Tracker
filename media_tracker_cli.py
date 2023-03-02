@@ -25,3 +25,9 @@ def update(position: int, task: str = None, category: str = None):
     show()
 
 
+@app.command(short_help="Marks an item as complete")
+def complete(position: int):
+    typer.echo(f"complete {position}")
+    show()
+
+
