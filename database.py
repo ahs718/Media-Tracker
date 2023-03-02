@@ -23,7 +23,7 @@ create_table()
 
 def insert_todo(todo: Todo):
     c.execute("select count(*) FROM todos")
-    count = c.fetchone()[0]
+    count = c.fetchone()[0]  # gets number of items in table
     todo.position = count if count else 0
     with conn:
         # using parameter subsitution syntax prevents sql injection attacks
@@ -39,3 +39,21 @@ def get_all_todos() -> List[Todo]:
         # unpacks all arguments and puts them into contructor for Todo class
         todos.append(Todo(*result))
     return todos
+
+
+def delete_todo(position):
+    c.execute("select count(*) from todos")
+    count = c.fetchone()[0]
+
+    with conn:
+        c.execute("DELETE from todos WHERE position=:position",
+                  {"position": position})
+        for pos in range(position+1, count):
+            change_position(pos, pos-1, False)
+
+
+def change_position(old_position: int, new_position: int, commit=True):
+    c.execute("UPDATE todos SET position = :position_new WHERE position = :position_old", {
+              "position_old": old_position, "position_new": new_position})
+    if commit:
+        conn.commit()
