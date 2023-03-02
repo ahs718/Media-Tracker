@@ -4,7 +4,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 from model import Entry
-from database import get_all_entries, delete_entry, insert_entry, complete_entry, update_entry, sort_entries
+from database import get_all_entries, delete_entry, insert_entry, complete_entry, update_entry
 
 console = Console()
 
