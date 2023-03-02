@@ -70,3 +70,9 @@ def update_todo(position: int, task: str, category: str):
         elif category is not None:
             c.execute("UPDATE todos SET category = :category WHERE position = :position",
                       {"position": position, "category": category})
+
+
+def complete_todo(position: int):
+    with conn:
+        c.execute("UPDATE todos SET status = 2, date_completed = :date_completed WHERE position = :position",
+                  {"position": position, "date_completed": datetime.datetime.now().isoformat()})
