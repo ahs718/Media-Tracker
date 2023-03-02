@@ -13,3 +13,9 @@ def add(task: str, category: str):
     show()
 
 
+@app.command(short_help="Deletes an item from the list")
+def delete(position: int):
+    typer.echo(f"deleting {position}")
+    show()
+
+
