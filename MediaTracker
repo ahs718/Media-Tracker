@@ -4,7 +4,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 from model import Entry
-from database import get_all_entries, delete_entry, insert_entry, complete_entry, update_entry
+from database import get_all_entries, delete_entry, insert_entry, complete_entry, update_entry, sort_entries
 
 console = Console()
 
@@ -13,7 +13,7 @@ app = typer.Typer()
 
 @app.command(short_help="Adds an entry to the list")
 def add(title: str, category: str):
-    typer.echo(f"adding {title}, {category}")
+    typer.echo(f"Adding entry {title}, {category}...")
     entry = Entry(title, category)
     insert_entry(entry)
     show()
@@ -21,7 +21,7 @@ def add(title: str, category: str):
 
 @app.command(short_help="Deletes an entry from the list")
 def delete(position: int):
-    typer.echo(f"deleting {position}")
+    typer.echo(f"Deleting entry at position {position}...")
     # index in UI begins at 1, but in database begins at 0
     delete_entry(position-1)
     show()
@@ -29,14 +29,14 @@ def delete(position: int):
 
 @app.command(short_help="Update an entry's properties")
 def update(position: int, title: str = None, category: str = None):
-    typer.echo(f"updating {position}")
+    typer.echo(f"Updating {position}...")
     update_entry(position-1, title, category)
     show()
 
 
-@app.command(short_help="Marks an entry as complete")
+@app.command(short_help="Marks an entry as completed")
 def complete(position: int):
-    typer.echo(f"complete {position}")
+    typer.echo(f"Marking {position} as completed...")
     complete_entry(position-1)
     show()
 
