@@ -21,4 +21,11 @@ def create_table():
 create_table()
 
 
-
+def insert_todo(todo: Todo):
+    c.execute("select count(*) FROM todos")
+    count = c.fetchone()[0]
+    todo.position = count if count else 0
+    with conn:
+        # using parameter subsitution syntax prevents sql injection attacks
+        c.execute("INSERT INTO todos VALUES (:task, :category, :date_added, :date_completed, :status, :position)",
+                  {"task": todo.task, "category": todo.category, "date_added": todo.date_added, "date_completed": todo.date_completed, "status": todo.status, "position": todo.position})
