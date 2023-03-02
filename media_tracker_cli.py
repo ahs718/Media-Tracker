@@ -41,7 +41,7 @@ def complete(position: int):
 
 @app.command(short_help="Displays all of the items in the list")
 def show():
-    task = [("Attack on Titan", "Completed"), ("Gurren Lagann", "Completed")]
+    tasks = get_all_todos
     console.print("[bold magenta]Task[/bold magenta]", "💻")
 
     table = Table(show_header=True, header_style="bold blue")
@@ -62,11 +62,11 @@ def show():
             return COLORS[category]
         return "white"
 
-    for index, task in enumerate(task, start=1):
-        c = get_category_color(task[1])
-        is_done_str = "✅" if True == 2 else "⏳"
-        table.add_row(str(index), task[0],
-                      f"[{c}]{task[1]}[/{c}]", is_done_str)
+    for index, task in enumerate(tasks, start=1):
+        c = get_category_color(task.category)
+        is_done_str = "✅" if task.status == 2 else "⏳"
+        table.add_row(str(index), task.task,
+                      f"[{c}]{task.category}[/{c}]", is_done_str)
     console.print(table)
 
 
