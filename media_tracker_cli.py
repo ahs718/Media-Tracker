@@ -19,3 +19,9 @@ def delete(position: int):
     show()
 
 
+@app.command(short_help="Update an item's properties")
+def update(position: int, task: str = None, category: str = None):
+    typer.echo(f"updating {position}")
+    show()
+
+
