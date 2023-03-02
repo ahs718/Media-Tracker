@@ -1,52 +1,52 @@
 import typer
 from rich.console import Console
 from rich.table import Table
-from model import Todo
-from database import get_all_todos, delete_todo, insert_todo, complete_todo, update_todo
+from model import Entry
+from database import get_all_entries, delete_entry, insert_entry, complete_entry, update_entry
 
 console = Console()
 
 app = typer.Typer()
 
 
-@app.command(short_help="Adds an item to the list")
-def add(task: str, category: str):
-    typer.echo(f"adding {task}, {category}")
-    todo = Todo(task, category)
-    insert_todo(todo)
+@app.command(short_help="Adds an entry to the list")
+def add(title: str, category: str):
+    typer.echo(f"adding {title}, {category}")
+    entry = Entry(title, category)
+    insert_entry(entry)
     show()
 
 
-@app.command(short_help="Deletes an item from the list")
+@app.command(short_help="Deletes an entry from the list")
 def delete(position: int):
     typer.echo(f"deleting {position}")
     # index in UI begins at 1, but in database begins at 0
-    delete_todo(position-1)
+    delete_entry(position-1)
     show()
 
 
-@app.command(short_help="Update an item's properties")
-def update(position: int, task: str = None, category: str = None):
+@app.command(short_help="Update an entry's properties")
+def update(position: int, title: str = None, category: str = None):
     typer.echo(f"updating {position}")
-    update_todo(position-1, task, category)
+    update_entry(position-1, title, category)
     show()
 
 
-@app.command(short_help="Marks an item as complete")
+@app.command(short_help="Marks an entry as complete")
 def complete(position: int):
     typer.echo(f"complete {position}")
-    complete_todo(position-1)
+    complete_entry(position-1)
     show()
 
 
-@app.command(short_help="Displays all of the items in the list")
+@app.command(short_help="Displays all of the entries in the list")
 def show():
-    tasks = get_all_todos()
-    console.print("[bold magenta]Task[/bold magenta]", "💻")
+    entries = get_all_entries()
+    console.print("[bold magenta]Entries![/bold magenta]", "💻")
 
     table = Table(show_header=True, header_style="bold blue")
     table.add_column("#", style="dim", width=6)
-    table.add_column("Task", min_width=20)
+    table.add_column("Title", min_width=20)
     table.add_column("Category", min_width=12, justify="right")
     table.add_column("Done", min_width=12, justify="right")
 
@@ -62,11 +62,11 @@ def show():
             return COLORS[category]
         return "white"
 
-    for index, task in enumerate(tasks, start=1):
-        c = get_category_color(task.category)
-        is_done_str = "✅" if task.status == 2 else "⏳"
-        table.add_row(str(index), task.task,
-                      f"[{c}]{task.category}[/{c}]", is_done_str)
+    for index, entry in enumerate(entries, start=1):
+        c = get_category_color(entry.category)
+        is_done_str = "✅" if entry.status == 2 else "⏳"
+        table.add_row(str(index), entry.title,
+                      f"[{c}]{entry.category}[/{c}]", is_done_str)
     console.print(table)
 
 

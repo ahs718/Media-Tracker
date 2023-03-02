@@ -1,15 +1,15 @@
 import sqlite3
 from typing import List
 import datetime
-from model import Todo
+from model import Entry
 
-conn = sqlite3.connect("todos.db")
+conn = sqlite3.connect("entries.db")
 c = conn.cursor()
 
 
 def create_table():
-    c.execute("""CREATE TABLE IF NOT EXISTS todos (
-        task text,
+    c.execute("""CREATE TABLE IF NOT EXISTS entries (
+        title text,
         category text,
         date_added text,
         date_completed text,
@@ -21,58 +21,58 @@ def create_table():
 create_table()
 
 
-def insert_todo(todo: Todo):
-    c.execute("select count(*) FROM todos")
+def insert_entry(entry: Entry):
+    c.execute("select count(*) FROM entries")
     count = c.fetchone()[0]  # gets number of items in table
-    todo.position = count if count else 0
+    entry.position = count if count else 0
     with conn:
         # using parameter subsitution syntax prevents sql injection attacks
-        c.execute("INSERT INTO todos VALUES (:task, :category, :date_added, :date_completed, :status, :position)",
-                  {"task": todo.task, "category": todo.category, "date_added": todo.date_added, "date_completed": todo.date_completed, "status": todo.status, "position": todo.position})
+        c.execute("INSERT INTO entries VALUES (:title, :category, :date_added, :date_completed, :status, :position)",
+                  {"title": entry.title, "category": entry.category, "date_added": entry.date_added, "date_completed": entry.date_completed, "status": entry.status, "position": entry.position})
 
 
-def get_all_todos() -> List[Todo]:
-    c.execute("select * from todos")
+def get_all_entries() -> List[Entry]:
+    c.execute("select * from entries")
     results = c.fetchall()
-    todos = []
+    entries = []
     for result in results:
-        # unpacks all arguments and puts them into contructor for Todo class
-        todos.append(Todo(*result))
-    return todos
+        # unpacks all arguments and puts them into contructor for Entry class
+        entries.append(Entry(*result))
+    return entries
 
 
-def delete_todo(position):
-    c.execute("select count(*) from todos")
+def delete_entry(position):
+    c.execute("select count(*) from entries")
     count = c.fetchone()[0]
 
     with conn:
-        c.execute("DELETE from todos WHERE position=:position",
+        c.execute("DELETE from entries WHERE position=:position",
                   {"position": position})
         for pos in range(position+1, count):
             change_position(pos, pos-1, False)
 
 
 def change_position(old_position: int, new_position: int, commit=True):
-    c.execute("UPDATE todos SET position = :position_new WHERE position = :position_old",
+    c.execute("UPDATE entries SET position = :position_new WHERE position = :position_old",
               {"position_old": old_position, "position_new": new_position})
     if commit:
         conn.commit()
 
 
-def update_todo(position: int, task: str, category: str):
+def update_entry(position: int, title: str, category: str):
     with conn:
-        if task is not None and category is not None:
-            c.execute("UPDATE todos SET task = :task, category = :category WHERE position = :position",
-                      {"position": position, "task": task, "category": category})
-        elif task is not None:
-            c.execute("UPDATE todos SET task = :task WHERE position = :position",
-                      {"position": position, "task": task})
+        if title is not None and category is not None:
+            c.execute("UPDATE entries SET title = :title, category = :category WHERE position = :position",
+                      {"position": position, "title": title, "category": category})
+        elif title is not None:
+            c.execute("UPDATE entries SET title = :title WHERE position = :position",
+                      {"position": position, "title": title})
         elif category is not None:
-            c.execute("UPDATE todos SET category = :category WHERE position = :position",
+            c.execute("UPDATE entries SET category = :category WHERE position = :position",
                       {"position": position, "category": category})
 
 
-def complete_todo(position: int):
+def complete_entry(position: int):
     with conn:
-        c.execute("UPDATE todos SET status = 2, date_completed = :date_completed WHERE position = :position",
+        c.execute("UPDATE entries SET status = 2, date_completed = :date_completed WHERE position = :position",
                   {"position": position, "date_completed": datetime.datetime.now().isoformat()})
